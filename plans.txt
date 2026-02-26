@@ -1,0 +1,19 @@
+Libraries: stdio.h, stdlib.h, time.h
+
+Since a connect-4 board is 6x7, we'll  use #define ROWS 6 and #define COLUMNS 7
+We'll also need an array for the board
+
+Our starting file will look like this:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define ROWS 6
+#define COLUMNS 7
+
+int main(){
+  char board[ROWS][COLUMNS]; /* Using 'r', 'y', and 'n' to represent the circles */
+  ...
+  return 0;
+}
+
