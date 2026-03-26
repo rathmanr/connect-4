@@ -2,18 +2,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
+#include "connect4.h"
 #include "colors.h"
-
-#define ROWS 6
-#define COLUMNS 7
-
-// Define these so we can change them anytime
-#define EMPTYSLOT 'n'
-#define YELLOWSLOT 'y'
-#define REDSLOT 'r'
+#include "printBoard.h"
 
 // Main methods
-void printBoard(char* board);
+void clearBoard(char* board);
 int checkLinks(char* board, int linkLength, int *lastMove, int *outputCoords);
 int makeMove(char *board, int move, char turn);
 int aiMove(char* board, int difficulty);
@@ -29,27 +24,13 @@ int maxOfInts(int a, int b);
 
 int main(){
     srand(time(NULL));
-    // Test to see if makeMove and column check works (You can delete this)
-    char test[ROWS][COLUMNS] = {
-      {'y', 'n', 'n', 'n', 'n', 'n', 'n'},
-      {'n', 'y', 'n', 'n', 'n', 'n', 'n'},
-      {'n', 'n', 'y', 'n', 'n', 'n', 'n'},
-      {'n', 'n', 'n', 'n', 'n', 'n', 'n'},
-      {'n', 'n', 'n', 'r', 'n', 'n', 'n'},
-      {'n', 'n', 'n', 'y', 'n', 'n', 'n'}
-    };
-    int column = 3, linkLength = 4;
-    int row = makeMove(&test[0][0], column, 'y');
-    int lastMove[2] = {row, column};
-    int outputCoords[4][2]; //We'll set it to 4 because that's the max the link length should be anyways
-    int won = checkLinks(&test[0][0], linkLength, lastMove, &outputCoords[0][0]);
-    printf("%d\n", won);
+
+    char board[ROWS][COLUMNS];
+    char *boardPtr = &board[0][0];
+    clearBoard(boardPtr);
+    printBoard(board);
 
     return 0;
-}
-
-void printBoard(char* board_pointer){
-
 }
 
 /*
@@ -248,47 +229,48 @@ int makeMove(char *board, int move, char turn) {
 
 int aiMove(char* board_pointer, int difficulty){
     if (difficulty == 1){
-        char boardA[ROWS][COLUMNS];
-        char *boardPtr = &boardA[0][0];
-        copyBoard(board, boardPtr);
-    
-        int choices[COLUMNS];
-        int i, col, row, win, links;
-        char slot;
-    
-        for (i = 0; i < COLUMNS; i++) {
-            choices[i] = 0;
-        }
-    
-        for (links = 4; links > 1; links--) {
-            for (col = 0; col < COLUMNS; col++) {
-                for(i = 0; i < 2; i++) {
-                    copyBoard(board, boardPtr);
-                    slot = i == 0 ? YELLOWSLOT : REDSLOT;
-                    row = makeMove(boardPtr, col, slot);
-                    if (row == -1) continue;
-                    int move[] = {row, col};
-                    int outputCoords[links][2];
-                    win = checkLinks(boardPtr, links, &move[0], &outputCoords[0][0]);
-                    if (win > 0) choices[col] += links * (links == 4 ? 4 : 1); // If 2, 4 in a rows can be made make own first
-                }
-            }
-        }
-    
-        int maxIndex = 0, sum = choices[0];
-        printf(BLUE"%d ", sum);
-        for (i = 1; i < COLUMNS; i++) {
-            int a = maxOfInts(choices[maxIndex], choices[i]);
-            if (choices[maxIndex] != a) maxIndex = i;
-            sum += choices[i];
-            printf("%d ", choices[i]);
-        }
-        printf("\n"WHITE);
-        if (sum == 0) return -1;
-        return maxIndex;
+        return getOkMove(board_pointer); //Moved it back to the function for now because the variable names were messed up here and it wouldn't compile
     }
 
     return 0;
+}
+
+int getOkMove(char *board) {
+    char boardA[ROWS][COLUMNS];
+    char *boardPtr = &boardA[0][0];
+    copyBoard(board, boardPtr);
+
+    int choices[COLUMNS];
+    int i, col, row, win, links;
+    char slot;
+
+    for (i = 0; i < COLUMNS; i++) {
+        choices[i] = 0;
+    }
+
+    for (links = 4; links > 1; links--) {
+        for (col = 0; col < COLUMNS; col++) {
+            for(i = 0; i < 2; i++) {
+                copyBoard(board, boardPtr);
+                slot = i == 0 ? YELLOWSLOT : REDSLOT;
+                row = makeMove(boardPtr, col, slot);
+                if (row == -1) continue;
+                int move[] = {row, col};
+                int outputCoords[links][2];
+                win = checkLinks(boardPtr, links, &move[0], &outputCoords[0][0]);
+                if (win > 0) choices[col] += links * (links == 4 ? 4 : 1); // If 2, 4 in a rows can be made make own first
+            }
+        }
+    }
+
+    int maxIndex = 0, sum = choices[0];
+    for (i = 1; i < COLUMNS; i++) {
+        int a = maxOfInts(choices[maxIndex], choices[i]);
+        if (choices[maxIndex] != a) maxIndex = i;
+        sum += choices[i];
+    }
+    if (sum == 0) return -1;
+    return maxIndex;
 }
 
 // Helper methods start
@@ -314,7 +296,7 @@ void changeOutputCoords(int *outputCoords, int row, int column, int value) {
 /*
     Copies one board to another so you can modify it without modifying the original.
 
-    board1 -> The board to copy frmo
+    board1 -> The board to copy from
     board2 -> The board to copy to
 */
 void copyBoard(char *board1, char *board2) {
@@ -331,6 +313,11 @@ int maxOfInts(int a, int b) {
     return a > b ? a : b;
 }
 
-int getOkMove(char *board) {
-    
+void clearBoard(char* board) {
+	int i, j;
+    for (i = 0; i < ROWS; i++) {
+        for (j = 0; j < COLUMNS; j++) {
+            *(board + i * COLUMNS + j) = ' ';
+        }
+    }
 }
