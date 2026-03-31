@@ -12,9 +12,9 @@ int aiMove(char* board_pointer, int difficulty){
     } else if (difficulty == 2){
       choice = getOkMove(board_pointer);
     } else if (difficulty == 3){
-      choice = -1;
+      choice = -1; // Change this to call your hard function
     } else if (difficulty == 4){
-      choice = -1;
+      choice = -1; // Change this to call your impossible function
     }
 
     if (choice < 0 || choice >= COLUMNS){ // Fallback for invalid choice (Chooses random move)
@@ -44,9 +44,10 @@ int getOkMove(char *board) {
                 row = makeMove(boardPtr, col, slot);
                 if (row == -1) continue;
                 int move[] = {row, col};
-                int outputCoords[links][2];
-                win = checkLinks(boardPtr, links, &move[0], &outputCoords[0][0]);
-                if (win > 0) choices[col] += links * (links == 4 ? 4 : 1);
+                win = checkForWin(boardPtr, links, &move[0]);
+                if (win > 0) {
+                    choices[col] += links * (links == 4 ? 4 : 1);
+                }
             }
         }
     }

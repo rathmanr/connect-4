@@ -14,7 +14,7 @@ int getAIMode() {
     if (duelAI == 'n') return -1;
 
     int n;
-    printf("What mode should it be?\n1. Easy\n2. Normal\n3. Hard\n4. Difficult\n ");
+    printf("What mode should it be?\n1. Easy\n2. Normal\n3. Hard\n4. Impossible\n ");
     scanf("%d", &n);
     while (n < 1 || n > 4) {
         printf("Enter a number between 1 and %d: ", COLUMNS);

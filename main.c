@@ -19,7 +19,6 @@ int main(){
     int turn = 0;
     
     int rowPos, requiredInARow = 4;
-    int outputCoords[requiredInARow][2];
     int move;
 
     int aiDiff = getAIMode(); // AI difficulty, -1 is no AI.
@@ -49,13 +48,13 @@ int main(){
         
         int lastMove[2] = {rowPos, move};
 
-        if (checkLinks(boardPtr, requiredInARow, &lastMove[0], &outputCoords[0][0]) >= 1) { // Check for win
+        if (checkForWin(boardPtr, requiredInARow, &lastMove[0]) >= 1) { // Check for win
             printBoard(board);
             printf("%s wins!\n"WHITE, turn == 0 ? YELLOW"Yellow" : RED"Red");
             break;
         } else if (noPossibleMoves(boardPtr)) { // If board is filled it is a draw
             printBoard(board);
-            printf("The game ended in a draw.");
+            printf("The game ended in a draw.\n");
             break;
         }
         turn = (turn + 1) % 2;
